@@ -1,0 +1,34 @@
+#cloud-config
+# vim:syntax=yaml
+# cloudimg-build-dev.yml,
+# cloud-init file which installs repos and packages
+# 
+
+yum_repos:
+  xcp-ng:
+    baseurl: http://mirrors.xcp-ng.org/7/7.6/base/x86_64/
+    enabled: true
+    gpgcheck: 0
+    name: XCP-ng Base Repository
+
+  xcp-ng-updates:
+    baseurl: http://mirrors.xcp-ng.org/7/7.6/updates/x86_64/
+    gpgcheck: 0
+    name: XCP-ng Updates Repository
+
+packages:
+  - blktap
+  - vhd-tool
+  - libguestfs-tools
+
+write_files:
+  - path: /root/convert-to-vhd.sh
+    permissions: '0755'
+    content: |
+              #!/bin/sh
+              /usr/bin/wget -qO /root/opensuse.qcow2 https://download.opensuse.org/distribution/openSUSE-stable/jeos/openSUSE-Leap-15.1-JeOS.x86_64-15.1.0-OpenStack-Cloud-Current.qcow2
+              /usr/bin/qemu-img convert -p -O vpc -o subformat=dynamic /root/opensuse.qcow2 /root/opensuse.fixed.vhd
+              vhd-util coalesce -n /root/opensuse.fixed.vhd -o /root/opensuse.dynamic.vhd
+
+runcmd:
+      - /bin/sh /root/convert-to-vhd.sh
