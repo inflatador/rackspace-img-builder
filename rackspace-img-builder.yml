@@ -1,6 +1,6 @@
 #cloud-config
 # vim:syntax=yaml
-# img-build-cloud-init.yml
+# rackspace-img-builder.yml
 # cloud-init file which installs repos and packages
 # 
 
